@@ -2,9 +2,15 @@
   "AWSEBDockerrunVersion": 2,
   "volumes": [
     {
-      "name": "php-app",
+      "name": "app-api",
       "host": {
-        "sourcePath": "/var/app/current/php-app"
+        "sourcePath": "/var/app/current/api"
+      }
+    },
+    {
+      "name": "app-ui",
+      "host": {
+        "sourcePath": "/var/app/current/ui"
       }
     },
     {
@@ -12,22 +18,50 @@
       "host": {
         "sourcePath": "/var/app/current/proxy/conf.d"
       }
-    }  
+    }
   ],
   "containerDefinitions": [
+
     {
-      "name": "php-app",
-      "image": "php:fpm",
+      "name": "app-api",
+      "image": "node:latest",
       "essential": true,
-      "memory": 128,
+      "memory": 256,
+      "command": [
+        "/bin/bash",
+        "/usr/src/app/run-prod.sh"
+      ],
       "mountPoints": [
         {
-          "sourceVolume": "php-app",
-          "containerPath": "/var/www/html",
-          "readOnly": true
+          "sourceVolume": "app-api",
+          "containerPath": "/usr/src/app"
         }
       ]
     },
+
+    {
+      "name": "app-ui",
+      "image": "node:latest",
+      "essential": true,
+      "memory": 512,
+      "command": [
+        "/bin/bash",
+        "/usr/src/app/run-prod.sh"
+      ],
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "containerPort": 3000
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "app-ui",
+          "containerPath": "/usr/src/app"
+        }
+      ]
+    },
+
     {
       "name": "nginx-proxy",
       "image": "nginx",
@@ -40,14 +74,10 @@
         }
       ],
       "links": [
-        "php-app"
+        "app-api",
+        "app-ui"
       ],
       "mountPoints": [
-        {
-          "sourceVolume": "php-app",
-          "containerPath": "/var/www/html",
-          "readOnly": true
-        },
         {
           "sourceVolume": "awseb-logs-nginx-proxy",
           "containerPath": "/var/log/nginx"
@@ -59,5 +89,6 @@
         }
       ]
     }
+
   ]
 }
