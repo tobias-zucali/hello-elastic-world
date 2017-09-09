@@ -1,13 +1,13 @@
 const express = require('express');
 
-const { Client, Pool } = require('pg');
+// const { Client, Pool } = require('pg');
 
-const pool = new Pool()
+// const pool = new Pool()
 
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  pool.end()
-});
+// pool.query('SELECT NOW()', (err, res) => {
+//   console.log(err, res)
+//   pool.end()
+// });
 
 console.log('hi there!')
 
