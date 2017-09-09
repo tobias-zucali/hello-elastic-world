@@ -6,9 +6,9 @@
     "react-scripts": "0.2.1"
   },
   "dependencies": {
-    "pushstate-server": "^1.10.0",
-    "react": "^15.2.1",
-    "react-dom": "^15.2.1"
+    "pushstate-server": "1.10.0",
+    "react": "15.2.1",
+    "react-dom": "15.2.1"
   },
   "scripts": {
     "serve": "pushstate-server build 3000",

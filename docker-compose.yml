@@ -7,6 +7,10 @@ services:
     command: ./run-dev.sh
     volumes:
      - ./api:/usr/src/app
+    ports:
+     - "9229:9229"
+    expose:
+     - "9229"
 
   app-ui:
     image: "node:latest"
