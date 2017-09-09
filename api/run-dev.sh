@@ -1,4 +1,4 @@
 #!/bin/bash
-cd /usr/src/app
+cd /usr/src/api
 npm install
-npm start
+npm run startDev

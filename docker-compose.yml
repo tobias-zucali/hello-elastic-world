@@ -1,26 +1,44 @@
-version: '2'
+version: '3'
 services:
 
-  app-api:
-    image: "node:latest"
-    working_dir: /usr/src/app
-    command: ./run-dev.sh
-    volumes:
-     - ./api:/usr/src/app
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_PASSWORD: mqZWhLi
+      POSTGRES_USER: postgres
 
-  app-ui:
+  api:
+    image: "node:latest"
+    working_dir: /usr/src/api
+    command: ./run-dev.sh
+    volumes:
+     - ./api:/usr/src/api
+    depends_on:
+     - postgres
+    environment:
+      PGDATABASE: db
+      PGHOST: postgres
+      PGPASSWORD: mqZWhLi
+      PGUSER: postgres
+    ports:
+     - "9229:9229"
+    expose:
+     - "9229"
+
+  app:
     image: "node:latest"
     working_dir: /usr/src/app
     command: ./run-dev.sh
     volumes:
-     - ./ui:/usr/src/app
+     - ./app:/usr/src/app
 
   nginx:
     image: nginx
     ports:
      - "80:80"
     volumes:
-     - ./proxy/conf.d:/etc/nginx/conf.d
+     - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
-     - app-ui
-     - app-api
+     - app
+     - api
