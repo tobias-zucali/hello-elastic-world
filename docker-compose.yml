@@ -1,23 +1,23 @@
 version: '2'
 services:
 
-  app-api:
+  backend:
     image: "node:latest"
     working_dir: /usr/src/app
     command: ./run-dev.sh
     volumes:
-     - ./api:/usr/src/app
+     - ./backend:/usr/src/app
     ports:
      - "9229:9229"
     expose:
      - "9229"
 
-  app-ui:
+  app:
     image: "node:latest"
     working_dir: /usr/src/app
     command: ./run-dev.sh
     volumes:
-     - ./ui:/usr/src/app
+     - ./app:/usr/src/app
 
   nginx:
     image: nginx
@@ -26,5 +26,5 @@ services:
     volumes:
      - ./proxy/conf.d:/etc/nginx/conf.d
     depends_on:
-     - app-ui
-     - app-api
+     - app
+     - backend

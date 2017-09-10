@@ -2,15 +2,15 @@
   "AWSEBDockerrunVersion": 2,
   "volumes": [
     {
-      "name": "app-api",
+      "name": "backend",
       "host": {
-        "sourcePath": "/var/app/current/api"
+        "sourcePath": "/var/app/current/backend"
       }
     },
     {
-      "name": "app-ui",
+      "name": "app",
       "host": {
-        "sourcePath": "/var/app/current/ui"
+        "sourcePath": "/var/app/current/app"
       }
     },
     {
@@ -23,7 +23,7 @@
   "containerDefinitions": [
 
     {
-      "name": "app-api",
+      "name": "backend",
       "image": "node:latest",
       "essential": true,
       "memory": 256,
@@ -33,14 +33,14 @@
       ],
       "mountPoints": [
         {
-          "sourceVolume": "app-api",
+          "sourceVolume": "backend",
           "containerPath": "/usr/src/app"
         }
       ]
     },
 
     {
-      "name": "app-ui",
+      "name": "app",
       "image": "node:latest",
       "essential": true,
       "memory": 512,
@@ -56,7 +56,7 @@
       ],
       "mountPoints": [
         {
-          "sourceVolume": "app-ui",
+          "sourceVolume": "app",
           "containerPath": "/usr/src/app"
         }
       ]
@@ -74,8 +74,8 @@
         }
       ],
       "links": [
-        "app-api",
-        "app-ui"
+        "backend",
+        "app"
       ],
       "mountPoints": [
         {
