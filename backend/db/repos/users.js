@@ -4,6 +4,7 @@ const sql = require('./sql');
 
 const queries = {
     create: sql('users/create.sql'),
+    notify: sql('users/notify.sql'),
     empty: sql('users/empty.sql'),
     init: sql('users/init.sql'),
     drop: sql('users/drop.sql'),
@@ -22,7 +23,11 @@ class UsersRepository {
 
     // Creates the table;
     create() {
-        return this.db.none(queries.create);
+        return this.db.none(
+            queries.create
+        ).then(() => this.db.none(
+            queries.notify
+        ));
     }
 
     // Initializes the table with some user records, and return their id-s;

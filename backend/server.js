@@ -86,6 +86,22 @@ GET('/api/products/all', () => db.products.all());
 GET('/api/products/total', () => db.products.total());
 
 /////////////////////////////////////////////
+// pubsub
+/////////////////////////////////////////////
+
+db.connect({direct: true})
+    .then(sco => {
+        sco.client.on('notification', data => {
+            console.log('Received:', JSON.parse(data.payload));
+            // data.payload = 'my payload string'
+        });
+        return sco.none('LISTEN $1~', 'users');
+    })
+    .catch(error => {
+        console.log('Error:', error);
+    });
+
+/////////////////////////////////////////////
 // Express/server part;
 /////////////////////////////////////////////
 
