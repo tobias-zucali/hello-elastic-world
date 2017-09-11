@@ -22,6 +22,7 @@ services:
       RDS_PASSWORD: mqZWhLi
       RDS_USERNAME: postgres
       RDS_PORT: 5432
+      NODE_ENV: develop
     ports:
      - "9229:9229"
     expose:
@@ -33,6 +34,8 @@ services:
     command: ./run-dev.sh
     volumes:
      - ./app:/usr/src/app
+    environment:
+      NODE_ENV: develop
 
   nginx:
     image: nginx
