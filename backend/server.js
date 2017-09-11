@@ -25,9 +25,6 @@ app.get('/api/getJane', function (req, res) {
     birthday: new Date(1980, 6, 20)
   }})
   .spread(jane => {
-    console.log(jane.get({
-      plain: true
-    }));
     res.send(JSON.stringify(jane.get({
       plain: true
     })));
