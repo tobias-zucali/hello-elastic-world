@@ -14,10 +14,6 @@ const app = express();
 // Users Web API
 //////////////////////////////////////////////
 
-app.get('/api', function (req, res) {
-  res.send('Hello World (/api)!');
-});
-
 // create table Users:
 GET('/api/users/create', () => db.users.create());
 
@@ -32,12 +28,13 @@ GET('/api/users/drop', () => db.users.drop());
 
 // add a new user, if it doesn't exist yet, and return the object:
 GET('/api/users/add/:name', req => {
-    return db.task('add-user', t => {
-        return t.users.findByName(req.params.name)
-            .then(user => {
-                return user || t.users.add(req.params.name);
-            });
+  return db.task('add-user', t => {
+    return t.users.findByName(
+      req.params.name
+    ).then(user => {
+      return user || t.users.add(req.params.name);
     });
+  });
 });
 
 // find a user by id:
@@ -47,7 +44,7 @@ GET('/api/users/find/:id', req => db.users.findById(req.params.id));
 GET('/api/users/remove/:id', req => db.users.remove(req.params.id));
 
 // get all users:
-GET('/api/users/all', () => db.users.all());
+GET('/api/users', () => db.users.all());
 
 // count all users:
 GET('/api/users/total', () => db.users.total());
@@ -67,12 +64,13 @@ GET('/api/products/empty', () => db.products.empty());
 
 // add a new user product, if it doesn't exist yet, and return the object:
 GET('/api/products/add/:userId/:name', req => {
-    return db.task('add-product', t => {
-        return t.products.find(req.params)
-            .then(product => {
-                return product || t.products.add(req.params);
-            });
+  return db.task('add-product', t => {
+    return t.products.find(
+      req.params
+    ).then(product => {
+      return product || t.products.add(req.params);
     });
+  });
 });
 
 // find a product by user id + product name id:
@@ -93,25 +91,23 @@ GET('/api/products/total', () => db.products.total());
 
 // Generic GET handler;
 function GET(url, handler) {
-    app.get(url, (req, res) => {
-        handler(req)
-            .then(data => {
-                res.json({
-                    success: true,
-                    data
-                });
-            })
-            .catch(error => {
-                res.json({
-                    success: false,
-                    error: error.message || error
-                });
-            });
+  app.get(url, (req, res) => {
+    handler(req).then(data => {
+      res.json({
+        success: true,
+        data
+      });
+    }).catch(error => {
+      res.json({
+        success: false,
+        error: error.message || error
+      });
     });
+  });
 }
 
 const port = 3001;
 
 app.listen(port, () => {
-    console.log('\nReady for GET requests on http://localhost:' + port);
+  console.log('\nReady for GET requests on http://localhost:' + port);
 });

@@ -6,14 +6,25 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'LOADING…'
+      name: 'LOADING…',
+      newUserName: ''
     };
+
+    this.loadUsers = this.loadUsers.bind(this);
+    this.createNewUser = this.createNewUser.bind(this);
+    this.resetUsers = this.resetUsers.bind(this);
   }
+
   componentDidMount() {
-    api('/api/users/all').then((allUsers) => {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    api('/api/users').then((allUsers) => {
+      console.log('Users', allUsers);
       if (allUsers.length > 0) {
         this.setState({
-          name: allUsers[0].username
+          name: allUsers[allUsers.length - 1].name
         });
       } else {
         this.setState({
@@ -22,6 +33,26 @@ class App extends Component {
       }
     });
   }
+
+  createNewUser(event) {
+    event.preventDefault();
+    const newUserName = this.state.newUserName;
+    if (newUserName) {
+      api(`/api/users/add/${ newUserName }`).then((res) => {
+        this.loadUsers();
+      });
+      this.setState({newUserName: ''})
+    }
+  }
+
+  resetUsers() {
+    api('/api/users/drop').then(
+      (res) => api('/api/users/create')
+    ).then(
+      this.loadUsers
+    );
+  }
+
   render() {
     return (
       <div className="App">
@@ -29,9 +60,21 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome { this.state.name }</h2>
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <form
+          className="App-intro"
+          onSubmit={ this.createNewUser }
+        >
+          <label>
+            New user
+            <input
+              value={ this.state.newUserName }
+              onChange={ (event) => this.setState({newUserName: event.target.value}) }
+              placeholder="name"
+            />
+            <button type="submit">Create new user</button>
+          </label>
+        </form>
+        <button onClick={ this.resetUsers }>Reset users</button>
       </div>
     );
   }
