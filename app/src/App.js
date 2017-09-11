@@ -10,11 +10,27 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    httpGetAsync('/api/getJane', (res) => {
-      var jane = JSON.parse(res);
-      this.setState({
-        name: jane.username
-      });
+    fetch('/api/users/all').then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(response);
+      }
+    }).then((result) => {
+      if (result.success) {
+        const allUsers = result.data;
+        if (allUsers.length > 0) {
+          this.setState({
+            name: allUsers[0].username
+          });
+        } else {
+          this.setState({
+            name: 'NO ENTRIES IN DB'
+          });
+        }
+      } else {
+        return Promise.reject(result);
+      }
     });
   }
   render() {
