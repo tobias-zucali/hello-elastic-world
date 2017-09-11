@@ -2,10 +2,7 @@
 
 // Loading all the database repositories separately,
 // because event 'extend' is called multiple times:
-const repos = {
-    users: require('./repos/users'),
-    products: require('./repos/products')
-};
+const repos = require('./repos');
 
 // pg-promise initialization options:
 const initOptions = {

@@ -1,6 +1,13 @@
 'use strict';
 
-const sql = require('../sql').products;
+const sql = require('./sql');
+const queries = {
+    create: sql('products/create.sql'),
+    empty: sql('products/empty.sql'),
+    drop: sql('products/drop.sql'),
+    find: sql('products/find.sql'),
+    add: sql('products/add.sql')
+};
 
 /*
  This repository mixes hard-coded and dynamic SQL, primarily to show a diverse example of using both.
@@ -14,23 +21,23 @@ class ProductsRepository {
 
     // Creates the table;
     create() {
-        return this.db.none(sql.create);
+        return this.db.none(queries.create);
     }
 
     // Drops the table;
     drop() {
-        return this.db.none(sql.drop);
+        return this.db.none(queries.drop);
     }
 
     // Removes all records from the table;
     empty() {
-        return this.db.none(sql.empty);
+        return this.db.none(queries.empty);
     }
 
     // Adds a new record and returns the full object;
     // It is also an example of mapping HTTP requests into query parameters;
     add(values) {
-        return this.db.one(sql.add, {
+        return this.db.one(queries.add, {
             userId: +values.userId,
             productName: values.name
         });
@@ -43,7 +50,7 @@ class ProductsRepository {
 
     // Tries to find a user product from user id + product name;
     find(values) {
-        return this.db.oneOrNone(sql.find, {
+        return this.db.oneOrNone(queries.find, {
             userId: +values.userId,
             productName: values.name
         });

@@ -1,6 +1,14 @@
 'use strict';
 
-const sql = require('../sql').users;
+const sql = require('./sql');
+
+const queries = {
+    create: sql('users/create.sql'),
+    empty: sql('users/empty.sql'),
+    init: sql('users/init.sql'),
+    drop: sql('users/drop.sql'),
+    add: sql('users/add.sql')
+};
 
 /*
  This repository mixes hard-coded and dynamic SQL, primarily to show a diverse example of using both.
@@ -14,27 +22,27 @@ class UsersRepository {
 
     // Creates the table;
     create() {
-        return this.db.none(sql.create);
+        return this.db.none(queries.create);
     }
 
     // Initializes the table with some user records, and return their id-s;
     init() {
-        return this.db.map(sql.init, [], row => row.id);
+        return this.db.map(queries.init, [], row => row.id);
     }
 
     // Drops the table;
     drop() {
-        return this.db.none(sql.drop);
+        return this.db.none(queries.drop);
     }
 
     // Removes all records from the table;
     empty() {
-        return this.db.none(sql.empty);
+        return this.db.none(queries.empty);
     }
 
     // Adds a new user, and returns the new object;
     add(name) {
-        return this.db.one(sql.add, name);
+        return this.db.one(queries.add, name);
     }
 
     // Tries to delete a user by id, and returns the number of records deleted;

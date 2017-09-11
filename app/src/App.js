@@ -10,26 +10,15 @@ class App extends Component {
     };
   }
   componentDidMount() {
-    fetch('/api/users/all').then((response) => {
-      if (response.ok) {
-        return response.json();
+    api('/api/users/all').then((allUsers) => {
+      if (allUsers.length > 0) {
+        this.setState({
+          name: allUsers[0].username
+        });
       } else {
-        return Promise.reject(response);
-      }
-    }).then((result) => {
-      if (result.success) {
-        const allUsers = result.data;
-        if (allUsers.length > 0) {
-          this.setState({
-            name: allUsers[0].username
-          });
-        } else {
-          this.setState({
-            name: 'NO ENTRIES IN DB'
-          });
-        }
-      } else {
-        return Promise.reject(result);
+        this.setState({
+          name: 'NO ENTRIES IN DB'
+        });
       }
     });
   }
@@ -50,13 +39,19 @@ class App extends Component {
 
 export default App;
 
-function httpGetAsync(theUrl, callback)
+function api(url)
 {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
-            callback(xmlHttp.responseText);
+  return fetch(url).then((response) => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return Promise.reject(response);
     }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous
-    xmlHttp.send(null);
+  }).then((result) => {
+    if (result.success) {
+      return result.data;
+    } else {
+      return Promise.reject(result);
+    }
+  });
 }
