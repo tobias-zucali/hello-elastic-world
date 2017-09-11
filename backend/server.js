@@ -10,30 +10,30 @@ const User = sequelize.define('user', {
   birthday: Sequelize.DATE
 });
 
-sequelize.sync()
-  .then(
-    () => User.findOrCreate({where: {
-      username: 'janedoe',
-      birthday: new Date(1980, 6, 20)
-    }})
-    .spread(jane => {
-      console.log(jane.get({
-        plain: true
-      }));
-    })
-  );
+sequelize.sync();
 
-var express = require('express')
-var app = express()
-
-app.get('/', function (req, res) {
-  res.send('Hello World (/)!')
-})
+var express = require('express');
+var app = express();
 
 app.get('/api', function (req, res) {
-  res.send('Hello World (/api)!')
-})
+  res.send('Hello World (/api)!');
+});
+
+app.get('/api/getJane', function (req, res) {
+  User.findOrCreate({where: {
+    username: 'janedoe',
+    birthday: new Date(1980, 6, 20)
+  }})
+  .spread(jane => {
+    console.log(jane.get({
+      plain: true
+    }));
+    res.send(JSON.stringify(jane.get({
+      plain: true
+    })));
+  });
+});
 
 app.listen(3001, function () {
-  console.log('Example app listening on port 3001!')
-})
+  console.log('Example app listening on port 3001!');
+});
