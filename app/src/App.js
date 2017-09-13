@@ -6,53 +6,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'LOADING…',
-      newUserName: ''
+      name: 'LOADING…'
     };
-
-    this.loadUsers = this.loadUsers.bind(this);
-    this.createNewUser = this.createNewUser.bind(this);
-    this.resetUsers = this.resetUsers.bind(this);
   }
-
   componentDidMount() {
-    this.loadUsers();
-  }
-
-  loadUsers() {
-    api('/api/users').then((allUsers) => {
-      console.log('Users', allUsers);
-      if (allUsers.length > 0) {
-        this.setState({
-          name: allUsers[allUsers.length - 1].name
-        });
-      } else {
-        this.setState({
-          name: 'NO ENTRIES IN DB'
-        });
-      }
+    httpGetAsync('/api/getJane', (res) => {
+      var jane = JSON.parse(res);
+      this.setState({
+        name: jane.username
+      });
     });
   }
-
-  createNewUser(event) {
-    event.preventDefault();
-    const newUserName = this.state.newUserName;
-    if (newUserName) {
-      api(`/api/users/add/${ newUserName }`).then((res) => {
-        this.loadUsers();
-      });
-      this.setState({newUserName: ''})
-    }
-  }
-
-  resetUsers() {
-    api('/api/users/drop').then(
-      (res) => api('/api/users/create')
-    ).then(
-      this.loadUsers
-    );
-  }
-
   render() {
     return (
       <div className="App">
@@ -60,21 +24,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome { this.state.name }</h2>
         </div>
-        <form
-          className="App-intro"
-          onSubmit={ this.createNewUser }
-        >
-          <label>
-            New user
-            <input
-              value={ this.state.newUserName }
-              onChange={ (event) => this.setState({newUserName: event.target.value}) }
-              placeholder="name"
-            />
-            <button type="submit">Create new user</button>
-          </label>
-        </form>
-        <button onClick={ this.resetUsers }>Reset users</button>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
       </div>
     );
   }
@@ -82,19 +34,13 @@ class App extends Component {
 
 export default App;
 
-function api(url)
+function httpGetAsync(theUrl, callback)
 {
-  return fetch(url).then((response) => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      return Promise.reject(response);
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+            callback(xmlHttp.responseText);
     }
-  }).then((result) => {
-    if (result.success) {
-      return result.data;
-    } else {
-      return Promise.reject(result);
-    }
-  });
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
 }
