@@ -6,13 +6,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'LOADING…',
+      name: 'NOT AUTHENTICATED',
+      users: []
     };
 
     this.loadUsers = this.loadUsers.bind(this);
     this.signUp = this.signUp.bind(this);
     this.logIn = this.logIn.bind(this);
-    this.resetUsers = this.resetUsers.bind(this);
+    this.checkAuthentication = this.checkAuthentication.bind(this);
   }
 
   componentDidMount() {
@@ -20,23 +21,13 @@ class App extends Component {
   }
 
   loadUsers() {
-    api('/api/users').then((allUsers) => {
-      console.log('Users', allUsers);
-      if (allUsers.length > 0) {
-        this.setState({
-          name: allUsers[allUsers.length - 1].username
-        });
-      } else {
-        this.setState({
-          name: 'NO ENTRIES IN DB'
-        });
-      }
+    api('/api/users').then((users) => {
+      console.log('/api/users', users);
+      this.setState({
+        users
+      });
+      this.checkAuthentication();
     });
-    // api('/api/checkAuth').then((res) => {
-    //   console.log('/api/checkAuth', res);
-    // }).catch((err) => {
-    //   console.error('/api/checkAuth', err);
-    // });
   }
 
   signUp(event) {
@@ -46,7 +37,8 @@ class App extends Component {
       body: new FormData(event.target),
       method: 'POST',
     }).then((res) => {
-      this.loadUsers();
+      console.log('/api/signup', res);
+      this.checkAuthentication();
     });
   }
 
@@ -57,16 +49,22 @@ class App extends Component {
       body: new FormData(event.target),
       method: 'POST',
     }).then((res) => {
-      this.loadUsers();
+      console.log('/api/login', res);
+      this.checkAuthentication();
     });
   }
 
-  resetUsers() {
-    // api('/api/checkAuth').then((res) => {
-    //   api('/api/users/create');
-    // }).then(
-    //   this.loadUsers
-    // );
+  checkAuthentication() {
+    api('/api/checkAuth').then((res) => {
+      console.log('/api/checkAuth', res);
+      if (res.isAuthenticated) {
+        this.setState({
+          name: res.user.username
+        });
+      }
+    }).catch((err) => {
+      console.error('/api/checkAuth', err);
+    });
   }
 
   render() {
@@ -86,13 +84,14 @@ class App extends Component {
           <input type="password" name="password" placeholder="password" />
           <button type="submit">Log in</button>
         </form>
-        <button onClick={ this.resetUsers }>Reset users</button>
+        <button onClick={ this.checkAuthentication }>Check authentication</button>
       </div>
     );
   }
 }
 
 export default App;
+
 
 
 const defaultOptions = {
@@ -105,7 +104,7 @@ const defaultOptions = {
 
 function api(url, options) {
   return fetch(url, {
-    defaultOptions,
+    ...defaultOptions,
     ...options
   }).then((response) => {
     if (response.ok) {
