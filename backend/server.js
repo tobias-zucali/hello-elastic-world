@@ -114,16 +114,13 @@ app.post(
 app.get(
   '/api/checkAuth',
   (req, res) => {
-    models.User.all()
-    .then((users) => {
-      res.send(JSON.stringify({
-        success: true,
-        data: {
-          isAuthenticated: req.isAuthenticated(),
-          user: req.user && req.user.toFrontend()
-        }
-      }));
-    });
+    res.send(JSON.stringify({
+      success: true,
+      data: {
+        isAuthenticated: req.isAuthenticated(),
+        user: req.user && req.user.toFrontend()
+      }
+    }));
   }
 );
 
@@ -132,7 +129,7 @@ app.get('/api/users', (req, res) => {
   .then((users) => {
     res.send(JSON.stringify({
       success: true,
-      data: users  // do not include pw!!!!
+      data: users.map((user) => user.toFrontend())
     }));
   });
 });
